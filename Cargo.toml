@@ -1,6 +1,11 @@
 [package]
 name = "clustersort"
-version = "0.1.0"
+version = "0.0.1"
+description = "Rust implementation of xklb's cluster-sort util"
+categories = ["command-line-utilities"]
+license = "BSD-3-Clause"
 edition = "2021"
+repository = "https://github.com/chapmanjacobd/clustersort"
+homepage = "https://github.com/chapmanjacobd/library"
 
 [dependencies]
