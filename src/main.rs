@@ -3,7 +3,7 @@ use linfa::DatasetBase;
 use linfa_clustering::KMeans;
 use linfa_nn::distance::LInfDist;
 use linfa_preprocessing::tf_idf_vectorization::TfIdfVectorizer;
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ArrayBase, Dim, OwnedRepr};
 use ndarray_rand::rand::SeedableRng;
 use rand_xoshiro::Xoshiro256Plus;
 use regex::Regex;
@@ -15,9 +15,7 @@ use tracing_subscriber::fmt::format::FmtSpan;
 extern crate serde_json;
 use clap::Parser;
 
-
 mod word_bank;
-
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -42,8 +40,6 @@ fn format_output(args: &Args, clusters: Vec<Vec<String>>) {
         writer.flush().unwrap();
     }
 }
-
-
 
 fn main() {
     setup_logging();
@@ -70,25 +66,31 @@ fn default_cluster_count(records: &Array2<f64>) -> usize {
     (num_rows as f64).sqrt().ceil() as usize
 }
 
-fn find_clusters(sentence_strings: Vec<String>, lines: Vec<String>) -> Vec<Vec<String>> {
-    let targets = Array1::from_shape_vec(sentence_strings.len(), sentence_strings.clone()).unwrap();
+// #[tracing::instrument]
+fn vectorize(targets: &ArrayBase<OwnedRepr<String>, Dim<[usize; 1]>>) -> ArrayBase<OwnedRepr<f64>, Dim<[usize; 2]>> {
     let vectorizer = TfIdfVectorizer::default()
         .stopwords(word_bank::STOP_WORDS)
         // .n_gram_range(1,2)
         .convert_to_lowercase(false)
-        .fit(&targets)
+        .fit(targets)
         .unwrap();
     debug!(
         "We obtain a vocabulary with {} entries",
         vectorizer.nentries()
     );
 
-    let training_records = vectorizer.transform(&targets).to_dense();
+    let training_records = vectorizer.transform(targets).to_dense();
     debug!(
         "We obtain a {}x{} matrix of counts for the vocabulary entries",
         training_records.dim().0,
         training_records.dim().1
     );
+    training_records
+}
+
+fn find_clusters(sentence_strings: Vec<String>, lines: Vec<String>) -> Vec<Vec<String>> {
+    let targets = Array1::from_shape_vec(sentence_strings.len(), sentence_strings.clone()).unwrap();
+    let training_records = vectorize(&targets);
 
     let n_clusters = default_cluster_count(&training_records);
     let dataset = DatasetBase::from((training_records, targets));
@@ -121,7 +123,7 @@ fn setup_logging() {
         .init();
 }
 
-fn preprocess(lines: &Vec<String>) -> Vec<String> {
+fn preprocess(lines: &[String]) -> Vec<String> {
     let mut sentence_strings: Vec<String> = lines
         .iter()
         .map(|line| {
@@ -145,7 +147,7 @@ fn preprocess(lines: &Vec<String>) -> Vec<String> {
     // Tokenize sentences and count word occurrences
     let mut word_counts: HashMap<String, usize> = HashMap::new();
     for line in &sentence_strings {
-        for word in word_regex.find_iter(&line) {
+        for word in word_regex.find_iter(line) {
             *word_counts.entry(word.as_str().to_string()).or_insert(0) += 1;
         }
     }
@@ -167,7 +169,7 @@ fn preprocess(lines: &Vec<String>) -> Vec<String> {
         })
         .collect();
 
-    return sentence_strings;
+    sentence_strings
 }
 
 #[cfg(test)]

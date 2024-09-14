@@ -12,6 +12,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "alga"
+version = "0.9.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4f823d037a7ec6ea2197046bafd4ae150e6bc36f9ca347404f46a46823fa84f2"
+dependencies = [
+ "approx 0.3.2",
+ "num-complex 0.2.4",
+ "num-traits",
+]
+
+[[package]]
 name = "anstream"
 version = "0.6.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -58,6 +69,15 @@ checksum = "5bf74e1b6e971609db8ca7a9ce79fd5768ab6ae46441c572e46cf596f59e57f8"
 dependencies = [
  "anstyle",
  "windows-sys",
+]
+
+[[package]]
+name = "approx"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f0e60b75072ecd4168020818c0107f2857bb6c4e64252d8d3983f6263b40a5c3"
+dependencies = [
+ "num-traits",
 ]
 
 [[package]]
@@ -138,12 +158,13 @@ dependencies = [
  "linfa-clustering",
  "linfa-nn",
  "linfa-preprocessing",
- "ndarray 0.15.6",
- "ndarray-rand 0.15.0",
+ "ndarray",
+ "ndarray-rand",
  "rand_xoshiro",
  "regex",
  "serde",
  "serde_json",
+ "sprs",
  "tracing",
  "tracing-subscriber",
 ]
@@ -273,6 +294,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
+name = "hermit-abi"
+version = "0.3.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d231dfb89cfffdbc30e7fc41579ed6066ad03abda9e567ccafae602b97ec5024"
+
+[[package]]
 name = "indexmap"
 version = "1.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -336,8 +363,8 @@ version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1cab423110bc374e4cfa915da88952e2c6a4a5a6300ac0a0e68022bff2ace0b3"
 dependencies = [
- "approx",
- "ndarray 0.15.6",
+ "approx 0.4.0",
+ "ndarray",
  "num-traits",
  "rand",
  "sprs",
@@ -351,7 +378,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fe1189e37c5226a109e105528be892c3732b2f01c88349d28745bd4edea9bd81"
 dependencies = [
  "linfa",
- "ndarray 0.15.6",
+ "ndarray",
  "ndarray-stats",
  "thiserror",
 ]
@@ -365,8 +392,8 @@ dependencies = [
  "linfa",
  "linfa-linalg",
  "linfa-nn",
- "ndarray 0.15.6",
- "ndarray-rand 0.14.0",
+ "ndarray",
+ "ndarray-rand",
  "ndarray-stats",
  "noisy_float",
  "num-traits",
@@ -381,7 +408,7 @@ version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56e7562b41c8876d3367897067013bb2884cc78e6893f092ecd26b305176ac82"
 dependencies = [
- "ndarray 0.15.6",
+ "ndarray",
  "num-traits",
  "thiserror",
 ]
@@ -394,7 +421,7 @@ checksum = "c1945b1a1435e885b4743dad94f9676c0bf65d6cce102e96c753f93b4cfe68d0"
 dependencies = [
  "kdtree",
  "linfa",
- "ndarray 0.15.6",
+ "ndarray",
  "ndarray-stats",
  "noisy_float",
  "num-traits",
@@ -408,12 +435,12 @@ version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9de00d503ab60e12428b77abeff006d1c4f1dba9d962bbd72bca591706c0a8ff"
 dependencies = [
- "approx",
+ "approx 0.4.0",
  "encoding",
  "linfa",
  "linfa-linalg",
- "ndarray 0.15.6",
- "ndarray-rand 0.14.0",
+ "ndarray",
+ "ndarray-rand",
  "ndarray-stats",
  "regex",
  "sprs",
@@ -449,28 +476,13 @@ version = "0.15.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "adb12d4e967ec485a5f71c6311fe28158e9d6f4bc4a447b474184d0f91a8fa32"
 dependencies = [
- "approx",
+ "approx 0.4.0",
  "matrixmultiply",
- "num-complex",
+ "num-complex 0.4.6",
  "num-integer",
  "num-traits",
  "rawpointer",
  "rayon",
-]
-
-[[package]]
-name = "ndarray"
-version = "0.16.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "882ed72dce9365842bf196bdeedf5055305f11fc8c03dee7bb0194a6cad34841"
-dependencies = [
- "matrixmultiply",
- "num-complex",
- "num-integer",
- "num-traits",
- "portable-atomic",
- "portable-atomic-util",
- "rawpointer",
 ]
 
 [[package]]
@@ -479,18 +491,7 @@ version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "65608f937acc725f5b164dcf40f4f0bc5d67dc268ab8a649d3002606718c4588"
 dependencies = [
- "ndarray 0.15.6",
- "rand",
- "rand_distr",
-]
-
-[[package]]
-name = "ndarray-rand"
-version = "0.15.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f093b3db6fd194718dcdeea6bd8c829417deae904e3fcc7732dabcd4416d25d8"
-dependencies = [
- "ndarray 0.16.1",
+ "ndarray",
  "rand",
  "rand_distr",
 ]
@@ -503,7 +504,7 @@ checksum = "af5a8477ac96877b5bd1fd67e0c28736c12943aba24eda92b127e036b0c8f400"
 dependencies = [
  "indexmap",
  "itertools",
- "ndarray 0.15.6",
+ "ndarray",
  "noisy_float",
  "num-integer",
  "num-traits",
@@ -527,6 +528,16 @@ checksum = "77a8165726e8236064dbb45459242600304b42a5ea24ee2948e18e023bf7ba84"
 dependencies = [
  "overload",
  "winapi",
+]
+
+[[package]]
+name = "num-complex"
+version = "0.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b6b19411a9719e753aff12e5187b74d60d3dc449ec3f4dc21e3989c3f554bc95"
+dependencies = [
+ "autocfg",
+ "num-traits",
 ]
 
 [[package]]
@@ -558,6 +569,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "num_cpus"
+version = "1.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4161fcb6d602d4d2081af7c3a45852d875a03dd337a6bfdd6e06407b61342a43"
+dependencies = [
+ "hermit-abi",
+ "libc",
+]
+
+[[package]]
 name = "once_cell"
 version = "1.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -580,21 +601,6 @@ name = "pin-project-lite"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bda66fc9667c18cb2758a2ac84d1167245054bcf85d5d1aaa6923f45801bdd02"
-
-[[package]]
-name = "portable-atomic"
-version = "1.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da544ee218f0d287a911e9c99a39a8c9bc8fcad3cb8db5959940044ecfc67265"
-
-[[package]]
-name = "portable-atomic-util"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fcdd8420072e66d54a407b3316991fe946ce3ab1083a7f575b2463866624704d"
-dependencies = [
- "portable-atomic",
-]
 
 [[package]]
 name = "ppv-lite86"
@@ -788,13 +794,16 @@ checksum = "e990cc6cb89a82d70fe722cd7811dbce48a72bbfaebd623e58f142b6db28428f"
 
 [[package]]
 name = "sprs"
-version = "0.11.2"
+version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "704ef26d974e8a452313ed629828cd9d4e4fa34667ca1ad9d6b1fffa43c6e166"
+checksum = "88bab60b0a18fb9b3e0c26e92796b3c3a278bf5fa4880f5ad5cc3bdfb843d0b1"
 dependencies = [
- "ndarray 0.16.1",
- "num-complex",
+ "alga",
+ "ndarray",
+ "num-complex 0.4.6",
  "num-traits",
+ "num_cpus",
+ "rayon",
  "smallvec",
 ]
 
