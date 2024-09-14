@@ -1,6 +1,7 @@
 use linfa::traits::{Fit, Predict};
 use linfa::DatasetBase;
 use linfa_clustering::KMeans;
+use linfa_nn::distance::LInfDist;
 use linfa_preprocessing::tf_idf_vectorization::TfIdfVectorizer;
 use ndarray::{Array1, Array2};
 use ndarray_rand::rand::SeedableRng;
@@ -8,20 +9,45 @@ use rand_xoshiro::Xoshiro256Plus;
 use regex::Regex;
 use std::collections::HashMap;
 use std::io::{self, BufRead, BufWriter, Write};
-use tracing_subscriber::fmt::format::FmtSpan;
-
-use linfa_nn::distance::LInfDist;
 use tracing::debug;
 use tracing_subscriber::fmt;
+use tracing_subscriber::fmt::format::FmtSpan;
+extern crate serde_json;
+use clap::Parser;
+
+
 mod word_bank;
 
-fn default_cluster_count(records: &Array2<f64>) -> usize {
-    let num_rows = records.shape()[0];
-    (num_rows as f64).sqrt().ceil() as usize
+
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// Print output in grouped JSON format
+    #[arg(short, long)]
+    groups: bool,
 }
+
+fn format_output(args: &Args, clusters: Vec<Vec<String>>) {
+    if args.groups {
+        println!("{}", serde_json::to_string_pretty(&clusters).unwrap());
+    } else {
+        let stdout = io::stdout();
+        let mut writer = BufWriter::new(stdout.lock());
+        for cluster in clusters.iter() {
+            for line in cluster {
+                writeln!(writer, "{}", line).unwrap();
+            }
+            // writeln!(writer).unwrap();
+        }
+        writer.flush().unwrap();
+    }
+}
+
+
 
 fn main() {
     setup_logging();
+    let args = Args::parse();
 
     let stdin = io::stdin();
     let lines: Vec<String> = stdin
@@ -33,14 +59,22 @@ fn main() {
     // dbg!(&lines);
 
     let sentence_strings = preprocess(&lines);
+    // dbg!(sentence_strings);
+
     let clusters = find_clusters(sentence_strings, lines);
-    format_output(clusters);
+    format_output(&args, clusters);
+}
+
+fn default_cluster_count(records: &Array2<f64>) -> usize {
+    let num_rows = records.shape()[0];
+    (num_rows as f64).sqrt().ceil() as usize
 }
 
 fn find_clusters(sentence_strings: Vec<String>, lines: Vec<String>) -> Vec<Vec<String>> {
     let targets = Array1::from_shape_vec(sentence_strings.len(), sentence_strings.clone()).unwrap();
     let vectorizer = TfIdfVectorizer::default()
         .stopwords(word_bank::STOP_WORDS)
+        // .n_gram_range(1,2)
         .convert_to_lowercase(false)
         .fit(&targets)
         .unwrap();
@@ -76,19 +110,6 @@ fn find_clusters(sentence_strings: Vec<String>, lines: Vec<String>) -> Vec<Vec<S
     }
     clusters.sort_by_key(|cluster| cluster.len());
     clusters
-}
-
-fn format_output(clusters: Vec<Vec<String>>) {
-    let stdout = io::stdout();
-    let mut writer = BufWriter::new(stdout.lock());
-    for (i, cluster) in clusters.iter().enumerate() {
-        writeln!(writer, "Cluster {}:", i).unwrap();
-        for line in cluster {
-            writeln!(writer, "{}", line).unwrap();
-        }
-        writeln!(writer).unwrap();
-    }
-    writer.flush().unwrap();
 }
 
 fn setup_logging() {
@@ -134,11 +155,11 @@ fn preprocess(lines: &Vec<String>) -> Vec<String> {
         .iter()
         .map(|line| {
             line.split_whitespace()
-                .map(|word| {
+                .filter_map(|word| {
                     if word_counts.get(word).unwrap_or(&0) > &1 {
-                        word.to_string()
+                        Some(word.to_string())
                     } else {
-                        "".to_string()
+                        None
                     }
                 })
                 .collect::<Vec<String>>()
@@ -146,7 +167,7 @@ fn preprocess(lines: &Vec<String>) -> Vec<String> {
         })
         .collect();
 
-    dbg!(sentence_strings)
+    return sentence_strings;
 }
 
 #[cfg(test)]

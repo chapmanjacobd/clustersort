@@ -1,6 +1,6 @@
 [package]
 name = "clustersort"
-version = "0.0.2"
+version = "0.0.3"
 description = "Rust port of xklb's cluster-sort util"
 categories = ["command-line-utilities"]
 license = "BSD-3-Clause"
@@ -9,7 +9,7 @@ repository = "https://github.com/chapmanjacobd/clustersort"
 homepage = "https://github.com/chapmanjacobd/library"
 
 [dependencies]
-clap = "4.5"
+clap = { version = "4.5", features = ["derive"] }
 encoding = "0.2"
 linfa = "0.7"
 linfa-bayes = "0.7"
